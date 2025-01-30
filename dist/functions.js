@@ -22,8 +22,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.technologyHandler = technologyHandler;
 exports.Chat = Chat;
 const ollama_1 = __importDefault(require("ollama"));
-const react_1 = require("./defaults/react");
-const prompt_1 = require("./prompt");
 function technologyHandler(prompt) {
     return __awaiter(this, void 0, void 0, function* () {
         const message = [
@@ -44,16 +42,17 @@ function technologyHandler(prompt) {
         return response.message.content;
     });
 }
-function Chat(prompt) {
+function Chat(message, res) {
     return __awaiter(this, void 0, void 0, function* () {
         var _a, e_1, _b, _c;
-        const message = [
-            { role: "system", content: (0, prompt_1.getSystemPrompt)() },
-            { role: "assistant", content: react_1.basePromptReact },
-            { role: "user", content: prompt },
-        ];
+        // const message = [
+        //   { role: "system", content: getSystemPrompt() },
+        //   { role: "assistant", content: basePromptReact },
+        //   { role: "user", content: prompt },
+        // ];
+        console.log("chat hit");
         const response = yield ollama_1.default.chat({
-            model: "deepseek-coder-v2:16b",
+            model: "codegemma:latest",
             options: { temperature: 0.7 },
             messages: message,
             stream: true,
@@ -63,7 +62,7 @@ function Chat(prompt) {
                 _c = response_1_1.value;
                 _d = false;
                 const part = _c;
-                process.stdout.write(part.message.content);
+                res.write(part.message.content);
             }
         }
         catch (e_1_1) { e_1 = { error: e_1_1 }; }
@@ -73,6 +72,7 @@ function Chat(prompt) {
             }
             finally { if (e_1) throw e_1.error; }
         }
+        res.end();
     });
 }
 // Chat("write a server side todo list project using nodejs ");

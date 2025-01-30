@@ -24,24 +24,31 @@ export async function technologyHandler(prompt: string) {
   return response.message.content;
 }
 
+interface Msg {
+  role: string;
+  content: string;
+}
 
 
 
-export async function Chat(prompt: string) {
-  const message = [
-    { role: "system", content: getSystemPrompt() },
-    { role: "assistant", content: basePromptReact },
-    { role: "user", content: prompt },
-  ];
+export async function Chat(message:Msg[],res:any) {
+  // const message = [
+  //   { role: "system", content: getSystemPrompt() },
+  //   { role: "assistant", content: basePromptReact },
+  //   { role: "user", content: prompt },
+  // ];
+  console.log("chat hit");
   const response = await ollama.chat({
-    model: "deepseek-coder-v2:16b",
+    model: "codegemma:latest",
     options: { temperature: 0.7 },
     messages: message,
     stream: true,
   });
   for await (const part of response) {
-    process.stdout.write(part.message.content);
+
+    res.write(part.message.content);
   }
+  res.end()
 }
 
 // Chat("write a server side todo list project using nodejs ");

@@ -55,6 +55,11 @@ app.post("/technology", (req, res) => __awaiter(void 0, void 0, void 0, function
         });
     }
 }));
+app.post("/chat", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const messages = req.body.messages;
+    yield (0, functions_1.Chat)(messages, res);
+    return;
+}));
 app.listen(5000, () => {
     console.log("backend running");
 });

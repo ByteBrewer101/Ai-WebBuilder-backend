@@ -3,7 +3,7 @@ import express, { response } from "express";
 import { BASE_PROMPT, getSystemPrompt } from "./prompt";
 import { basePromptReact } from "./defaults/react";
 import { basePromptNode } from "./defaults/node";
-import { technologyHandler } from "./functions";
+import { Chat, technologyHandler } from "./functions";
 import cors from "cors"
 const app = express();
 app.use(express.json());
@@ -42,6 +42,13 @@ console.log("technology hit");
     });
   }
 });
+
+
+app.post("/chat",async(req,res)=>{
+   const messages = req.body.messages;
+   await Chat(messages,res)
+   return
+})
 
 app.listen(5000, () => {
   console.log("backend running");
