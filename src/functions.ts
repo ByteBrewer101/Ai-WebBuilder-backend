@@ -1,55 +1,113 @@
-import ollama from "ollama";
-import { basePromptNode } from "./defaults/node";
+import { AzureOpenAI } from "openai";
+import type {
+  ChatCompletion,
+  ChatCompletionCreateParamsStreaming,
+  ChatCompletionCreateParamsNonStreaming,
+} from "openai/resources/index";
+
+import { BASE_PROMPT, getSystemPrompt } from "./prompt";
 import { basePromptReact } from "./defaults/react";
-import { getSystemPrompt } from "./prompt";
+import { basePromptNode } from "./defaults/node";
 
-export async function technologyHandler(prompt: string) {
-  const message = [
-    {
-      role: "system",
-      content:
-      "Return either node or react based on what do you think this project should be. ONLY return a SINGLE WORD either 'node' or 'react'. Do not return anything extra",
-    },
-    { role: "user", content: prompt }
-  ];
-  const response = await ollama.chat({
-    model: "codegemma:latest",
 
-    messages: message,
-    options: {
-      temperature: 0,
-    },
-    stream: false,
+
+const endpoint =
+  process.env["AZURE_OPENAI_ENDPOINT"] ;
+const apiKey =
+  process.env["AZURE_OPENAI_API_KEY"] ;
+
+const apiVersion = "2024-08-01-preview";
+const deploymentName = "gpt-4-2-assistant";
+
+function getClient(): AzureOpenAI {
+  return new AzureOpenAI({
+    endpoint,
+    apiKey,
+    apiVersion,
+    deployment: deploymentName,
   });
-  return response.message.content;
 }
 
-interface Msg {
-  role: string;
-  content: string;
-}
-
-
-
-export async function Chat(message:Msg[],res:any) {
-  // const message = [
-  //   { role: "system", content: getSystemPrompt() },
-  //   { role: "assistant", content: basePromptReact },
-  //   { role: "user", content: prompt },
-  // ];
-  console.log("chat hit");
-  const response = await ollama.chat({
-    model: "codegemma:latest",
-    options: { temperature: 0.7 },
-    messages: message,
+function createChatMessages(
+  messages: any
+): ChatCompletionCreateParamsStreaming {
+  return {
+    messages: [
+      {
+        role: "system",
+        content: getSystemPrompt(),
+      },
+      { role: "user", content: BASE_PROMPT },
+      ...messages,
+    ],
+    model: "",
     stream: true,
-  });
-  for await (const part of response) {
-
-    res.write(part.message.content);
-  }
-  res.end()
+  };
 }
 
-// Chat("write a server side todo list project using nodejs ");
+function createTemplateMessage(
+  message: any
+): ChatCompletionCreateParamsNonStreaming {
+  return {
+    messages: [
+      {
+        role: "system",
+        content:
+          "Return either node or react based on what do you think this project should be. Only return a single word either 'node' or 'react'. Do not return anything extra",
+      },
+      {
+        role: "user",
+        content: message,
+      },
+    ],
+    model: "",
+    max_tokens: 200,
+  };
+}
 
+export async function chat(message: any, res: any) {
+  const client = getClient();
+  const messages = createChatMessages(message);
+  const result = await client.chat.completions.create(messages);
+  for await (const chunk of result) {
+    // process.stdout.write(chunk.choices[0]?.delta?.content || "");
+    res.write(chunk.choices[0]?.delta?.content || "");
+  }
+  res.end();
+}
+
+export async function template(message: any, res: any) {
+  const client = getClient();
+  const messages = createTemplateMessage(message);
+  const result = await client.chat.completions.create(messages);
+
+  let response = "";
+
+  for (const choice of result.choices) {
+    console.log(choice.message);
+    response += choice.message.content;
+  }
+
+  if (response.startsWith("react")) {
+    res.json({
+      prompts: [
+        BASE_PROMPT,
+        `Here is an artifact that contains all files of the project visible to you.\nConsider the contents of ALL files in the project.\n\n${basePromptReact}\n\nHere is a list of files that exist on the file system but are not being shown to you:\n\n  - .gitignore\n  - package-lock.json\n`,
+      ],
+      uiPrompts: [basePromptReact],
+    });
+
+    return;
+  }
+  if (response.startsWith("node")) {
+    res.json({
+      prompts: [
+        `Here is an artifact that contains all files of the project visible to you.\nConsider the contents of ALL files in the project.\n\n${basePromptNode}\n\nHere is a list of files that exist on the file system but are not being shown to you:\n\n  - .gitignore\n  - package-lock.json\n`,
+      ],
+      uiPrompts: [basePromptNode],
+    });
+    return;
+  } else {
+    res.json({ msg: "we do not support that technology yet" });
+  }
+}
