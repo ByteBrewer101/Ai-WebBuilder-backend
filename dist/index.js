@@ -17,17 +17,22 @@ const cors_1 = __importDefault(require("cors"));
 const functions_1 = require("./functions");
 const dotenv_1 = require("dotenv");
 (0, dotenv_1.config)();
+const PORT = process.env.APP_PORT_NUMBER || 3000;
 const app = (0, express_1.default)();
 app.use((0, cors_1.default)());
 app.use(express_1.default.json());
 app.post("/chat", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { messages } = req.body;
     console.log("chat hit");
-    (0, functions_1.chat)(messages, res);
+    // chat(messages, res);
+    (0, functions_1.chatUtil)(res);
+    return;
 }));
 app.post("/technology", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { prompt } = req.body;
     console.log("tech hit");
-    (0, functions_1.template)(prompt, res);
+    // template(prompt, res);
+    (0, functions_1.templateUtil)(res);
+    return;
 }));
-app.listen(5000, () => console.log("running"));
+app.listen(PORT, () => console.log("running on " + PORT));

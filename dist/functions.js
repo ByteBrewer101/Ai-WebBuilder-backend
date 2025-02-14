@@ -18,14 +18,17 @@ var __asyncValues = (this && this.__asyncValues) || function (o) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.chat = chat;
 exports.template = template;
+exports.templateUtil = templateUtil;
+exports.chatUtil = chatUtil;
 const openai_1 = require("openai");
 const prompt_1 = require("./prompt");
 const react_1 = require("./defaults/react");
 const node_1 = require("./defaults/node");
+const sampleResponse_1 = require("./utils/sampleResponse");
 const endpoint = process.env["AZURE_OPENAI_ENDPOINT"];
 const apiKey = process.env["AZURE_OPENAI_API_KEY"];
 const apiVersion = "2024-08-01-preview";
-const deploymentName = "gpt-4-2-assistant";
+const deploymentName = "gpt-4o-test";
 function getClient() {
     return new openai_1.AzureOpenAI({
         endpoint,
@@ -40,11 +43,14 @@ function createChatMessages(messages) {
             {
                 role: "system",
                 content: (0, prompt_1.getSystemPrompt)(),
+            }, {
+                role: "system",
+                content: "make sure the base files are also created and added for the particular project and include the steps for those too in your response"
             },
-            { role: "user", content: prompt_1.BASE_PROMPT },
+            // { role: "user", content: BASE_PROMPT  },
             ...messages,
         ],
-        model: "",
+        model: deploymentName,
         stream: true,
     };
 }
@@ -122,5 +128,20 @@ function template(message, res) {
         else {
             res.json({ msg: "we do not support that technology yet" });
         }
+    });
+}
+function templateUtil(res) {
+    return __awaiter(this, void 0, void 0, function* () {
+        res.json({
+            prompts: [
+                `Here is an artifact that contains all files of the project visible to you.\nConsider the contents of ALL files in the project.\n\n${react_1.basePromptReact}\n\nHere is a list of files that exist on the file system but are not being shown to you:\n\n  - .gitignore\n  - package-lock.json\n`,
+            ],
+            uiPrompts: [react_1.basePromptReact],
+        });
+    });
+}
+function chatUtil(res) {
+    return __awaiter(this, void 0, void 0, function* () {
+        res.send(sampleResponse_1.sampleresponse);
     });
 }

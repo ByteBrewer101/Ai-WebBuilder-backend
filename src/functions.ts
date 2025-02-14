@@ -8,6 +8,7 @@ import type {
 import { BASE_PROMPT, getSystemPrompt } from "./prompt";
 import { basePromptReact } from "./defaults/react";
 import { basePromptNode } from "./defaults/node";
+import { sampleresponse } from "./utils/sampleResponse";
 
 
 
@@ -17,7 +18,7 @@ const apiKey =
   process.env["AZURE_OPENAI_API_KEY"] ;
 
 const apiVersion = "2024-08-01-preview";
-const deploymentName = "gpt-4-2-assistant";
+const deploymentName = "gpt-4o-test";
 
 function getClient(): AzureOpenAI {
   return new AzureOpenAI({
@@ -36,11 +37,16 @@ function createChatMessages(
       {
         role: "system",
         content: getSystemPrompt(),
-      },
-      { role: "user", content: BASE_PROMPT },
+      },{
+        role:"system",
+        content:"make sure the base files are also created and added for the particular project and include the steps for those too in your response"
+      }, 
+  
+    
+      // { role: "user", content: BASE_PROMPT  },
       ...messages,
     ],
-    model: "",
+    model: deploymentName,
     stream: true,
   };
 }
@@ -110,4 +116,22 @@ export async function template(message: any, res: any) {
   } else {
     res.json({ msg: "we do not support that technology yet" });
   }
+}
+
+
+
+export async function templateUtil(res:any){
+
+    res.json({
+      prompts: [
+        `Here is an artifact that contains all files of the project visible to you.\nConsider the contents of ALL files in the project.\n\n${basePromptReact}\n\nHere is a list of files that exist on the file system but are not being shown to you:\n\n  - .gitignore\n  - package-lock.json\n`,
+      ],
+      uiPrompts: [basePromptReact],
+    });
+
+}
+
+
+export async function chatUtil(res:any){
+  res.send(sampleresponse)
 }
