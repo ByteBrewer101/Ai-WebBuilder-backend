@@ -24,15 +24,15 @@ app.use(express_1.default.json());
 app.post("/chat", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { messages } = req.body;
     console.log("chat hit");
-    // chat(messages, res);
-    (0, functions_1.chatUtil)(res);
+    (0, functions_1.chat)(messages, res);
+    // chatUtil(res)
     return;
 }));
 app.post("/technology", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { prompt } = req.body;
     console.log("tech hit");
-    // template(prompt, res);
-    (0, functions_1.templateUtil)(res);
+    (0, functions_1.template)(prompt, res);
+    // templateUtil(res)
     return;
 }));
 app.listen(PORT, () => console.log("running on " + PORT));

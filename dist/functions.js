@@ -63,6 +63,10 @@ function createTemplateMessage(message) {
             },
             {
                 role: "user",
+                content: "make sure what output you give it should run and not give error  "
+            },
+            {
+                role: "user",
                 content: message,
             },
         ],

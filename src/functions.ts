@@ -8,7 +8,7 @@ import type {
 import { BASE_PROMPT, getSystemPrompt } from "./prompt";
 import { basePromptReact } from "./defaults/react";
 import { basePromptNode } from "./defaults/node";
-import { sampleresponse } from "./utils/sampleResponse";
+import { sample2, sampleresponse } from "./utils/sampleResponse";
 
 
 
@@ -60,6 +60,10 @@ function createTemplateMessage(
         role: "system",
         content:
           "Return either node or react based on what do you think this project should be. Only return a single word either 'node' or 'react'. Do not return anything extra",
+      },
+      {
+        role :"user",
+        content:"make sure what output you give it should run and not give error  "
       },
       {
         role: "user",

@@ -14,8 +14,8 @@ app.post("/chat", async (req, res) => {
   const { messages } = req.body;
   console.log("chat hit");
 
-  // chat(messages, res);
-  chatUtil(res)
+  chat(messages, res);
+  // chatUtil(res)
   return
 });
 
@@ -23,10 +23,10 @@ app.post("/technology", async (req, res) => {
   const { prompt } = req.body;
   console.log("tech hit");
 
-  // template(prompt, res);
+  template(prompt, res);
   
 
-  templateUtil(res)
+  // templateUtil(res)
   return;
 });
 
