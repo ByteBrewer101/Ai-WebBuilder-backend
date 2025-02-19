@@ -39,15 +39,15 @@ productRouter.use(middleware_1.dbMiddleware);
 productRouter.post("/chat", (0, express_2.requireAuth)(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { messages } = req.body;
     console.log("chat hit");
-    // chat(messages, res);
-    (0, functions_1.chatUtil)(res);
+    (0, functions_1.chat)(messages, res);
+    // chatUtil(res);
     return;
 }));
 productRouter.post("/technology", (0, express_2.requireAuth)(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { prompt } = req.body;
     console.log("tech hit");
-    // template(prompt, res);
-    (0, functions_1.templateUtil)(res);
+    (0, functions_1.template)(prompt, res);
+    // templateUtil(res);
     return;
 }));
 app.listen(PORT, () => console.log("running on " + PORT));
