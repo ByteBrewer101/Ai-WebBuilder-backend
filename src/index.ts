@@ -35,8 +35,8 @@ productRouter.post("/chat", requireAuth(), async (req, res) => {
   const { messages } = req.body;
   console.log("chat hit");
 
-  // chat(messages, res);
-  chatUtil(res);
+  chat(messages, res);
+  // chatUtil(res);
   return;
 });
 
@@ -44,9 +44,9 @@ productRouter.post("/technology", requireAuth(), async (req, res) => {
   const { prompt } = req.body;
   console.log("tech hit");
 
-  // template(prompt, res);
+  template(prompt, res);
 
-  templateUtil(res);
+  // templateUtil(res);
   return;
 });
 
