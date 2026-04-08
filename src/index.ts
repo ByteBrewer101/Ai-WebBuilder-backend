@@ -4,8 +4,8 @@ import { chat, chatUtil, template, templateUtil } from "./functions";
 import { config } from "dotenv";
 import { clerkMiddleware, requireAuth } from "@clerk/express";
 import { dbMiddleware } from "./middleware";
-import mongoose from "mongoose";
-import { userModel } from "./db";
+// import mongoose from "mongoose";
+// import { userModel } from "./db";
 config();
 // const mongouri = process.env.MONGO_URI || "";
 
