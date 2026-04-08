@@ -29,7 +29,8 @@ const productRouter = express.Router();
 app.use(productRouter);
 
 //@ts-expect-error
-productRouter.use(dbMiddleware);
+// productRouter.use(dbMiddleware);
+productRouter.use(clerkMiddleware);
 
 productRouter.post("/chat", requireAuth(), async (req, res) => {
   const { messages } = req.body;
