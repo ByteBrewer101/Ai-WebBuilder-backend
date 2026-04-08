@@ -7,15 +7,15 @@ import { dbMiddleware } from "./middleware";
 import mongoose from "mongoose";
 import { userModel } from "./db";
 config();
-const mongouri = process.env.MONGO_URI || "";
+// const mongouri = process.env.MONGO_URI || "";
 
-async function main() {
-  await mongoose.connect(mongouri);
+// async function main() {
+//   await mongoose.connect(mongouri);
 
-  console.log("db connected");
-}
+//   console.log("db connected");
+// }
 
-main().catch((err) => console.log(err));
+// main().catch((err) => console.log(err));
 
 const PORT = process.env.APP_PORT_NUMBER || 3000;
 const app = express();
